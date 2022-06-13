@@ -1,4 +1,5 @@
 import React from 'react';
+import Part from "./Part";
 
 const Content = (props) => {
 
@@ -10,7 +11,7 @@ const Content = (props) => {
     return (
         <div>
             { joinedArray.map(function ({exercises, part}, index) {
-                return <p key={index}>{part} {exercises} </p>
+                return <Part key={index} part={part} exercises={exercises}/>
             })}
         </div>
     )
