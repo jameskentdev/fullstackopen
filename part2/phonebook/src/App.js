@@ -68,9 +68,23 @@ const App = () => {
               )
             );
           })
-          .catch(() => {
+          //   .catch(() => {
+          //     const message = {
+          //       message: `Information of ${updatedPersonObject.name} has already been removed from the server`,
+          //       error: true,
+          //     };
+          //     setNotification(message);
+          //     setTimeout(() => {
+          //       const message = {
+          //         message: "",
+          //         error: true,
+          //       };
+          //       setNotification(message);
+          //     }, 3000);
+          //   })
+          .catch((error) => {
             const message = {
-              message: `Information of ${updatedPersonObject.name} has already been removed from the server`,
+              message: error.response.data.error,
               error: true,
             };
             setNotification(message);
@@ -84,23 +98,39 @@ const App = () => {
           });
       }
     } else {
-      personService.create(personObject).then((returnedPerson) => {
-        setPersons(persons.concat(returnedPerson));
-        setNewName("");
-        setNewNumber("");
-        const message = {
-          message: `Added ${returnedPerson.name}`,
-          error: false,
-        };
-        setNotification(message);
-        setTimeout(() => {
+      personService
+        .create(personObject)
+        .then((returnedPerson) => {
+          setPersons(persons.concat(returnedPerson));
+          setNewName("");
+          setNewNumber("");
           const message = {
-            message: "",
+            message: `Added ${returnedPerson.name}`,
+            error: false,
+          };
+          setNotification(message);
+          setTimeout(() => {
+            const message = {
+              message: "",
+              error: true,
+            };
+            setNotification(message);
+          }, 3000);
+        })
+        .catch((error) => {
+          const message = {
+            message: error.response.data.error,
             error: true,
           };
           setNotification(message);
-        }, 3000);
-      });
+          setTimeout(() => {
+            const message = {
+              message: "",
+              error: true,
+            };
+            setNotification(message);
+          }, 3000);
+        });
     }
   };
 
