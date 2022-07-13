@@ -52,13 +52,13 @@ app.delete('/api/persons/:id', (request, response) => {
 });
 
 app.put('/api/persons/:id', (request, response, next) => {
-  const { body } = request;
+  const { name, number } = request.body;
 
-  const person = {
-    number: body.number,
-  };
-
-  Person.findByIdAndUpdate(request.params.id, person, { new: true })
+  Person.findByIdAndUpdate(
+    request.params.id,
+    { name, number },
+    { new: true, runValidators: true, context: 'query' }
+  )
     .then((updatedPerson) => {
       response.json(updatedPerson);
     })
@@ -72,7 +72,7 @@ app.get('/info', (request, response) => {
   });
 });
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
   const { body } = request;
 
   if (!body.name) {
@@ -96,9 +96,12 @@ app.post('/api/persons', (request, response) => {
       response.status(404).send({ error: 'name not unique' });
     }
 
-    person.save().then((savedPerson) => {
-      response.json(savedPerson);
-    });
+    person
+      .save()
+      .then((savedPerson) => {
+        response.json(savedPerson);
+      })
+      .catch((error) => next(error));
   });
 
   return null;
@@ -106,6 +109,10 @@ app.post('/api/persons', (request, response) => {
 
 const errorHandler = (error, _request, response, next) => {
   console.log(error.message);
+
+  if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message });
+  }
 
   next(error);
 
