@@ -17,10 +17,9 @@ const mostBlogs = (blogs) => {
     ? null
     : _(blogs)
         .groupBy('author')
-        .toPairs()
-        .map((elem) => ({
-          author: elem[0],
-          blogs: elem[1].length,
+        .map((objs, key) => ({
+          author: key,
+          blogs: objs.length,
         }))
         .reduce((most, elem) => (most.blogs > elem.blogs ? most : elem));
 };
