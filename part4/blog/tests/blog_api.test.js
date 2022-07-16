@@ -79,3 +79,34 @@ test('missing title or url results in bad request', async () => {
 
   await api.post('/api/blogs').send(blog).expect(400);
 });
+
+test('succesfully delete a blog post', async () => {
+  const blogsAtStart = await helper.blogsInDb();
+  const blogToDelete = blogsAtStart[0];
+
+  await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+
+  const blogsAtEnd = await helper.blogsInDb();
+
+  expect(blogsAtEnd).toHaveLength(blogsAtStart.length - 1);
+
+  const titles = blogsAtEnd.map((r) => r.author);
+
+  expect(titles).not.toContain(blogToDelete.title);
+});
+
+test('edit a blog post', async () => {
+  const blogsAtStart = await helper.blogsInDb();
+  const blogToEdit = blogsAtStart[0];
+
+  const newTitle = 'An edited title!';
+  blogToEdit.title = newTitle;
+
+  const response = await api
+    .put(`/api/blogs/${blogToEdit.id}`)
+    .send(blogToEdit)
+    .expect(201)
+    .expect('Content-Type', /application\/json/);
+
+  expect(response.body.title).toEqual(newTitle);
+});
