@@ -1,5 +1,6 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImphbWVza2EiLCJpZCI6IjYyZGFjOThlMWY0ZTY4YWRkNzM3NDk4MiIsImlhdCI6MTY1ODUwNjkwOSwiZXhwIjoxNjU4NTEwNTA5fQ.SbMfcaqYRuRoI8yjF1NIG3XYzH48aCZdYSlKq6ZW28M
 
 {
     "title": "My First Blog",
