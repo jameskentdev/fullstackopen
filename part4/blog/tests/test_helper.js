@@ -39,9 +39,19 @@ const usersInDb = async () => {
   return users.map((user) => user.toJSON());
 };
 
+const loginUser = async (api) => {
+  const response = await api.post('/api/login').send({
+    username: initialUsers[0].username,
+    password: initialUsers[0].password,
+  });
+
+  return response.body;
+};
+
 module.exports = {
   initialBlogs,
   initialUsers,
   blogsInDb,
   usersInDb,
+  loginUser,
 };

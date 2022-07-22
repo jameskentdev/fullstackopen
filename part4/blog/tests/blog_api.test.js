@@ -3,13 +3,26 @@ const helper = require('./test_helper');
 const app = require('../app');
 const api = supertest(app);
 const Blog = require('../models/blog');
+const User = require('../models/user');
+
+let user;
 
 beforeEach(async () => {
   await Blog.deleteMany({});
+  await User.deleteMany({});
 
-  const blogObjects = helper.initialBlogs.map((blog) => new Blog(blog));
-  const promiseArray = blogObjects.map((blog) => blog.save());
-  await Promise.all(promiseArray);
+  for (let user of helper.initialUsers) {
+    await api.post('/api/users').send(user);
+  }
+
+  user = await helper.loginUser(api);
+
+  for (let blog of helper.initialBlogs) {
+    await api
+      .post('/api/blogs')
+      .set({ Authorization: `Bearer ${user.token}` })
+      .send(blog);
+  }
 });
 
 test('blogs are returned as json', async () => {
@@ -41,6 +54,7 @@ test('correct blog is created', async () => {
 
   await api
     .post('/api/blogs')
+    .set({ Authorization: `Bearer ${user.token}` })
     .send(blog)
     .expect(201)
     .expect('Content-Type', /application\/json/);
@@ -61,6 +75,7 @@ test('missing likes property defaults to 0', async () => {
 
   await api
     .post('/api/blogs')
+    .set({ Authorization: `Bearer ${user.token}` })
     .send(blog)
     .expect(201)
     .expect('Content-Type', /application\/json/);
@@ -77,14 +92,21 @@ test('missing title or url results in bad request', async () => {
     likes: 100,
   };
 
-  await api.post('/api/blogs').send(blog).expect(400);
+  await api
+    .post('/api/blogs')
+    .set({ Authorization: `Bearer ${user.token}` })
+    .send(blog)
+    .expect(400);
 });
 
 test('succesfully delete a blog post', async () => {
   const blogsAtStart = await helper.blogsInDb();
   const blogToDelete = blogsAtStart[0];
 
-  await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+  await api
+    .delete(`/api/blogs/${blogToDelete.id}`)
+    .set({ Authorization: `Bearer ${user.token}` })
+    .expect(204);
 
   const blogsAtEnd = await helper.blogsInDb();
 
@@ -104,6 +126,7 @@ test('edit a blog post', async () => {
 
   const response = await api
     .put(`/api/blogs/${blogToEdit.id}`)
+    .set({ Authorization: `Bearer ${user.token}` })
     .send(blogToEdit)
     .expect(201)
     .expect('Content-Type', /application\/json/);
