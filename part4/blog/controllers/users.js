@@ -40,9 +40,13 @@ usersRouter.post('/', async (request, response, _next) => {
 });
 
 usersRouter.get('/', async (request, response, _next) => {
-  const users = await User.find({});
+  const users = await User.find({}).populate('blogs', {
+    url: true,
+    title: true,
+    author: true,
+  });
 
-  response.status(200).json(users);
+  response.json(users);
 });
 
 module.exports = usersRouter;
