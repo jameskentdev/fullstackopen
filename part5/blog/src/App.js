@@ -24,6 +24,7 @@ const App = () => {
     if (loggedInUser) {
       const user = JSON.parse(loggedInUser);
       setUser(user);
+      blogService.setToken(user.token);
     }
   }, []);
 
@@ -36,6 +37,7 @@ const App = () => {
       const user = await loginService.login({ username, password });
 
       setUser(user);
+      blogService.setToken(user.token);
       window.localStorage.setItem('loggedInUser', JSON.stringify(user));
     } catch (error) {
       setNotification({ error: true, message: 'Wrong credentials' });
@@ -81,7 +83,7 @@ const App = () => {
 
     blogFormRef.current.toggleVisibility();
 
-    const blog = await blogService.create(user.token, {
+    const blog = await blogService.create({
       title,
       author,
       url,
