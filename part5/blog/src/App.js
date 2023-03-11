@@ -1,11 +1,15 @@
 import { useState, useEffect } from 'react';
 import Blog from './components/Blog';
+import Notification from './components/Notification';
 import blogService from './services/blogs';
 import loginService from './services/login';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [notification, setNotification] = useState({
+    error: false,
+    message: '',
+  });
   const [user, setUser] = useState();
 
   useEffect(() => {
@@ -31,9 +35,12 @@ const App = () => {
       setUser(user);
       window.localStorage.setItem('loggedInUser', JSON.stringify(user));
     } catch (error) {
-      setErrorMessage('Wrong credentials');
+      setNotification({ error: true, message: 'Wrong credentials' });
       setTimeout(() => {
-        setErrorMessage(null);
+        setNotification({
+          error: false,
+          message: '',
+        });
       }, 5000);
     }
   };
@@ -47,7 +54,7 @@ const App = () => {
     return (
       <div>
         <h1>log in to application</h1>
-        <h2 style={{ color: 'red' }}>{errorMessage}</h2>
+        <Notification {...notification} />
         <form onSubmit={handleLoginSubmit}>
           <div>
             <label>Username</label>
@@ -63,6 +70,56 @@ const App = () => {
     );
   };
 
+  const handleCreateBlogSubmit = async (e) => {
+    e.preventDefault();
+    const title = e.target.title.value;
+    const author = e.target.author.value;
+    const url = e.target.url.value;
+
+    console.log(title, author, url);
+
+    const blog = await blogService.create(user.token, {
+      title,
+      author,
+      url,
+    });
+
+    setBlogs(blogs.concat(blog));
+    setNotification({
+      error: false,
+      message: `a new blog ${title} by ${author} added`,
+    });
+    setTimeout(() => {
+      setNotification({
+        error: false,
+        message: '',
+      });
+    }, 5000);
+  };
+
+  const createBlogForm = () => {
+    return (
+      <div>
+        <h1>create new</h1>
+        <form onSubmit={handleCreateBlogSubmit}>
+          <div>
+            <label>title</label>
+            <input type="text" id="title" name="title" />
+          </div>
+          <div>
+            <label>author</label>
+            <input type="text" id="author" name="author" />
+          </div>
+          <div>
+            <label>url</label>
+            <input type="text" id="url" name="url" />
+          </div>
+          <button type="submit">create</button>
+        </form>
+      </div>
+    );
+  };
+
   return (
     <div>
       {!user ? (
@@ -70,8 +127,10 @@ const App = () => {
       ) : (
         <>
           <h2>blogs</h2>
+          <Notification {...notification} />
           {user.name} logged in
           <button onClick={handleLogoutClick}>log out</button>
+          {createBlogForm()}
           {blogs.map((blog) => (
             <Blog key={blog.id} blog={blog} />
           ))}
