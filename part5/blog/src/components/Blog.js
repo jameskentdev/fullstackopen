@@ -2,7 +2,7 @@ import { useState } from 'react';
 import _ from 'lodash';
 import blogService from '../services/blogs';
 
-const Blog = ({ blog }) => {
+const Blog = ({ user, blog }) => {
   const [visible, setVisible] = useState(false);
   const [toggle, setToggle] = useState(false);
 
@@ -30,6 +30,12 @@ const Blog = ({ blog }) => {
     setToggle(!toggle);
   };
 
+  const removeOnClick = async () => {
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+      await blogService.remove(blog.id);
+    }
+  };
+
   return (
     <div style={blogStyle}>
       <div>{blog.id}</div>
@@ -53,6 +59,9 @@ const Blog = ({ blog }) => {
             <button onClick={likeOnClick}>like</button>
           </div>
           <div>{blog.user.name}</div>
+          {user.username === blog.user.username && (
+            <button onClick={removeOnClick}>remove</button>
+          )}
         </>
       )}
     </div>

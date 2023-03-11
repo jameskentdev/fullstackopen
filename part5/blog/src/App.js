@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import _ from 'lodash';
 import Blog from './components/Blog';
 import Notification from './components/Notification';
 import BlogForm from './components/BlogForm';
@@ -116,7 +117,7 @@ const App = () => {
             <BlogForm handleCreateBlogSubmit={handleCreateBlogSubmit} />
           </Togglable>
           {blogs.map((blog) => (
-            <Blog key={blog.id} blog={blog} />
+            <Blog key={blog.id} user={user} blog={blog} />
           ))}
         </>
       )}
