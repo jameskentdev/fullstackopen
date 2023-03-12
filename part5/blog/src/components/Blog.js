@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 import _ from 'lodash';
 import blogService from '../services/blogs';
 
@@ -38,7 +39,6 @@ const Blog = ({ user, blog }) => {
 
   return (
     <div style={blogStyle}>
-      <div>{blog.id}</div>
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <div>
           {blog.title} {blog.author}
@@ -66,6 +66,11 @@ const Blog = ({ user, blog }) => {
       )}
     </div>
   );
+};
+
+Blog.propTypes = {
+  user: PropTypes.object.isRequired,
+  blog: PropTypes.object.isRequired,
 };
 
 export default Blog;
