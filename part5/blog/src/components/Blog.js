@@ -26,7 +26,7 @@ const Blog = ({ likeHandler, user, blog }) => {
   return (
     <div style={blogStyle}>
       <div style={{ display: 'flex', alignItems: 'center' }}>
-        <div>
+        <div data-testid="title-author">
           {blog.title} {blog.author}
         </div>
         {visible === true ? (
@@ -38,7 +38,7 @@ const Blog = ({ likeHandler, user, blog }) => {
         )}
       </div>
       {visible && (
-        <>
+        <div data-testid="view-enabled">
           <div>{blog.url}</div>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <div>{blog.likes} likes</div>
@@ -48,13 +48,14 @@ const Blog = ({ likeHandler, user, blog }) => {
           {user.username === blog.user.username && (
             <button onClick={removeOnClick}>remove</button>
           )}
-        </>
+        </div>
       )}
     </div>
   );
 };
 
 Blog.propTypes = {
+  likeHandler: PropTypes.func.isRequired,
   user: PropTypes.object.isRequired,
   blog: PropTypes.object.isRequired,
 };
