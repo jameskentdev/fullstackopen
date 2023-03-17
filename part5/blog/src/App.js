@@ -76,25 +76,17 @@ const App = () => {
     );
   };
 
-  const handleCreateBlogSubmit = async (e) => {
-    e.preventDefault();
-    const title = e.target.title.value;
-    const author = e.target.author.value;
-    const url = e.target.url.value;
+  const addBlog = async (newBlogObject) => {
+    const returnedBlog = await blogService.create(newBlogObject);
+    setBlogs(blogs.concat(returnedBlog));
 
     blogFormRef.current.toggleVisibility();
 
-    const blog = await blogService.create({
-      title,
-      author,
-      url,
-    });
-
-    setBlogs(blogs.concat(blog));
     setNotification({
       error: false,
-      message: `a new blog ${title} by ${author} added`,
+      message: `a new blog ${newBlogObject.title} by ${newBlogObject.author} added`,
     });
+
     setTimeout(() => {
       setNotification({
         error: false,
@@ -144,7 +136,7 @@ const App = () => {
           {user.name} logged in
           <button onClick={handleLogoutClick}>log out</button>
           <Togglable buttonLabel="new note" ref={blogFormRef}>
-            <BlogForm handleCreateBlogSubmit={handleCreateBlogSubmit} />
+            <BlogForm createBlog={addBlog} />
           </Togglable>
           {blogs
             .sort((a, b) => b.likes - a.likes)
