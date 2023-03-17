@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
 import blogService from '../services/blogs';
 
-const Blog = ({ user, blog }) => {
+const Blog = ({ likeHandler, user, blog }) => {
   const [visible, setVisible] = useState(false);
-  const [toggle, setToggle] = useState(false);
 
   const blogStyle = {
     paddingTop: 10,
@@ -17,18 +15,6 @@ const Blog = ({ user, blog }) => {
 
   const visibleOnClick = () => {
     setVisible(!visible);
-  };
-
-  const likeOnClick = async () => {
-    // Increment the likes, strip the populated user and remove blog id
-    const updatedBlog = _.omit(
-      { ...blog, likes: blog.likes + 1, user: blog.user.id },
-      'id'
-    );
-    await blogService.update(blog.id, updatedBlog);
-
-    // Need to do this to force re-render
-    setToggle(!toggle);
   };
 
   const removeOnClick = async () => {
@@ -56,7 +42,7 @@ const Blog = ({ user, blog }) => {
           <div>{blog.url}</div>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <div>{blog.likes} likes</div>
-            <button onClick={likeOnClick}>like</button>
+            <button onClick={likeHandler}>like</button>
           </div>
           <div>{blog.user.name}</div>
           {user.username === blog.user.username && (

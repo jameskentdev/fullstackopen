@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import _ from 'lodash';
 import Blog from './components/Blog';
 import Notification from './components/Notification';
 import BlogForm from './components/BlogForm';
@@ -102,6 +103,36 @@ const App = () => {
     }, 5000);
   };
 
+  const handleLike = async (index) => {
+    const id = blogs[index].id;
+
+    // Increment the likes, strip the populated user and remove blog id
+    let updatedBlog = blogs[index];
+    updatedBlog = _.omit(
+      {
+        ...updatedBlog,
+        likes: updatedBlog.likes + 1,
+        user: updatedBlog.user.id,
+      },
+      'id'
+    );
+
+    await blogService.update(id, updatedBlog);
+
+    // Increment the blog locally to update state
+    const newBlogs = blogs.map((blog) => {
+      if (blog.id === id) {
+        return {
+          ...blog,
+          likes: blog.likes + 1,
+        };
+      }
+      return blog;
+    });
+
+    setBlogs(newBlogs);
+  };
+
   return (
     <div>
       {!user ? (
@@ -117,8 +148,13 @@ const App = () => {
           </Togglable>
           {blogs
             .sort((a, b) => b.likes - a.likes)
-            .map((blog) => (
-              <Blog key={blog.id} user={user} blog={blog} />
+            .map((blog, index) => (
+              <Blog
+                key={blog.id}
+                likeHandler={() => handleLike(index)}
+                user={user}
+                blog={blog}
+              />
             ))}
         </>
       )}
