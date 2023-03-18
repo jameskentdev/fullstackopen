@@ -12,23 +12,15 @@ const Blog = ({ removeHandler, likeHandler, user, blog }) => {
     marginBottom: 5,
   };
 
-  const visibleOnClick = () => {
-    setVisible(!visible);
-  };
-
   return (
     <div className="blog" style={blogStyle}>
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <div data-testid="title-author">
           {blog.title} {blog.author}
         </div>
-        {visible === true ? (
-          <>
-            <button onClick={visibleOnClick}>hide</button>
-          </>
-        ) : (
-          <button onClick={visibleOnClick}>view</button>
-        )}
+        <button onClick={() => setVisible(!visible)}>
+          {visible ? 'hide' : 'show'}
+        </button>
       </div>
       {visible && (
         <div data-testid="view-enabled">
@@ -48,6 +40,7 @@ const Blog = ({ removeHandler, likeHandler, user, blog }) => {
 };
 
 Blog.propTypes = {
+  removeHandler: PropTypes.func.isRequired,
   likeHandler: PropTypes.func.isRequired,
   user: PropTypes.object.isRequired,
   blog: PropTypes.object.isRequired,
