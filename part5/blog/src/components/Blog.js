@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 
-const Blog = ({ removeHandler, likeHandler, user, blog }) => {
+const Blog = ({ removeHandler, likeHandler, canRemove, blog }) => {
   const [visible, setVisible] = useState(false);
 
   const blogStyle = {
@@ -30,9 +30,7 @@ const Blog = ({ removeHandler, likeHandler, user, blog }) => {
             <button onClick={likeHandler}>like</button>
           </div>
           <div>{blog.user.name}</div>
-          {user.username === blog.user.username && (
-            <button onClick={removeHandler}>remove</button>
-          )}
+          {canRemove && <button onClick={removeHandler}>remove</button>}
         </div>
       )}
     </div>
@@ -42,8 +40,8 @@ const Blog = ({ removeHandler, likeHandler, user, blog }) => {
 Blog.propTypes = {
   removeHandler: PropTypes.func.isRequired,
   likeHandler: PropTypes.func.isRequired,
-  user: PropTypes.object.isRequired,
   blog: PropTypes.object.isRequired,
+  canRemove: PropTypes.bool.isRequired,
 };
 
 export default Blog;
