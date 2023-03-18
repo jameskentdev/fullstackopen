@@ -17,7 +17,7 @@ const Blog = ({ removeHandler, likeHandler, user, blog }) => {
   };
 
   return (
-    <div style={blogStyle}>
+    <div className="blog" style={blogStyle}>
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <div data-testid="title-author">
           {blog.title} {blog.author}
