@@ -16,10 +16,18 @@ const Notification = ({ error, message }) => {
 
   if (error) {
     const error = { ...style, color: 'red' };
-    return <div style={error}>{message}</div>;
+    return (
+      <div className="notification" style={error}>
+        {message}
+      </div>
+    );
   } else {
     const ok = { ...style, color: 'green' };
-    return <div style={ok}>{message}</div>;
+    return (
+      <div className="notification" style={ok}>
+        {message}
+      </div>
+    );
   }
 };
 
