@@ -35,6 +35,10 @@ blogsRouter.post('/', userExtractor, async (request, response, _next) => {
 blogsRouter.delete('/:id', userExtractor, async (request, response, _next) => {
   const blog = await Blog.findById(request.params.id);
 
+  if (!blog) {
+    throw new Error('Blog not found');
+  }
+
   if (request.user.id.toString() === blog.user.toString()) {
     await Blog.findByIdAndDelete(request.params.id);
     response.status(204).end();
