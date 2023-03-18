@@ -125,6 +125,19 @@ const App = () => {
     setBlogs(newBlogs);
   };
 
+  const handleRemove = async (index) => {
+    const removedBlog = blogs[index];
+
+    if (
+      window.confirm(
+        `Remove blog ${removedBlog.title} by ${removedBlog.author}`
+      )
+    ) {
+      await blogService.remove(removedBlog.id);
+      setBlogs(blogs.filter((blog) => blog.id !== removedBlog.id));
+    }
+  };
+
   return (
     <div>
       {!user ? (
@@ -143,6 +156,7 @@ const App = () => {
             .map((blog, index) => (
               <Blog
                 key={blog.id}
+                removeHandler={() => handleRemove(index)}
                 likeHandler={() => handleLike(index)}
                 user={user}
                 blog={blog}
