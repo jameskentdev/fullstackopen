@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import _ from 'lodash';
 import Blog from './components/Blog';
 import Notification from './components/Notification';
 import BlogForm from './components/BlogForm';
@@ -22,7 +21,7 @@ const App = () => {
 
   useEffect(() => {
     const loggedInUser = window.localStorage.getItem('loggedInUser');
-    if (loggedInUser) {
+    if (loggedInUser !== 'null') {
       const user = JSON.parse(loggedInUser);
       setUser(user);
       blogService.setToken(user.token);
@@ -95,46 +94,16 @@ const App = () => {
     }, 5000);
   };
 
-  const handleLike = async (index) => {
-    const id = blogs[index].id;
-
-    // Increment the likes, strip the populated user and remove blog id
-    let updatedBlog = blogs[index];
-    updatedBlog = _.omit(
-      {
-        ...updatedBlog,
-        likes: updatedBlog.likes + 1,
-        user: updatedBlog.user.id,
-      },
-      'id'
-    );
-
-    await blogService.update(id, updatedBlog);
-
-    // Increment the blog locally to update state
-    const newBlogs = blogs.map((blog) => {
-      if (blog.id === id) {
-        return {
-          ...blog,
-          likes: blog.likes + 1,
-        };
-      }
-      return blog;
-    });
-
-    setBlogs(newBlogs);
+  const handleLike = async (blog) => {
+    const blogToUpdate = { ...blog, likes: blog.likes + 1, user: blog.user.id };
+    const updatedBlog = await blogService.update(blogToUpdate);
+    setBlogs(blogs.map((b) => (b.id === blog.id ? updatedBlog : b)));
   };
 
-  const handleRemove = async (index) => {
-    const removedBlog = blogs[index];
-
-    if (
-      window.confirm(
-        `Remove blog ${removedBlog.title} by ${removedBlog.author}`
-      )
-    ) {
-      await blogService.remove(removedBlog.id);
-      setBlogs(blogs.filter((blog) => blog.id !== removedBlog.id));
+  const handleRemove = async (blog) => {
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+      await blogService.remove(blog.id);
+      setBlogs(blogs.filter((b) => b.id !== blog.id));
     }
   };
 
@@ -153,11 +122,11 @@ const App = () => {
           </Togglable>
           {blogs
             .sort((a, b) => b.likes - a.likes)
-            .map((blog, index) => (
+            .map((blog) => (
               <Blog
                 key={blog.id}
-                removeHandler={() => handleRemove(index)}
-                likeHandler={() => handleLike(index)}
+                removeHandler={() => handleRemove(blog)}
+                likeHandler={() => handleLike(blog)}
                 user={user}
                 blog={blog}
               />
